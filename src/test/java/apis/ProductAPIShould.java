@@ -29,31 +29,7 @@ public class ProductAPIShould {
     public void setUp() {
         inMemoryProductRepository = mock(InMemoryProductRepository.class);
         req = mock(Request.class);
-        res = new Response(){
-
-            private String contentType = "";
-            private int statusCode = 0;
-
-            @Override
-            public void status(int statusCode) {
-                this.statusCode = statusCode;
-            }
-
-            @Override
-            public int status() {
-                return statusCode;
-            }
-
-            @Override
-            public void type(String contentType) {
-                this.contentType = contentType;
-            }
-
-            @Override
-            public String type() {
-                return contentType;
-            }
-        };
+        res = mock(Response.class);
         productAPI = new ProductAPI(inMemoryProductRepository);
     }
 
@@ -68,9 +44,9 @@ public class ProductAPIShould {
         String response = productAPI.getAll(req, res);
 
 
+        verify(res).type("application/json");
+        verify(res).status(200);
         assertThat(response, is(expectedResponse));
-        assertThat(res.status(), is(200));
-        assertThat(res.type(), is("application/json"));
     }
 
     @Test
@@ -87,9 +63,9 @@ public class ProductAPIShould {
         String response = productAPI.getAll(req, res);
 
 
+        verify(res).type("application/json");
+        verify(res).status(200);
         assertThat(response, is(expectedResponse));
-        assertThat(res.status(), is(200));
-        assertThat(res.type(), is("application/json"));
     }
 
     @Test
@@ -103,8 +79,8 @@ public class ProductAPIShould {
 
 
         verify(inMemoryProductRepository).add(newProduct);
+        verify(res).status(201);
         assertThat(response, is(""));
-        assertThat(res.status(), is(201));
     }
 
     @Test
@@ -119,8 +95,8 @@ public class ProductAPIShould {
 
 
         verify(inMemoryProductRepository, never()).add(alreadyExistingProduct);
+        verify(res).status(400);
         assertThat(response, is(""));
-        assertThat(res.status(), is(400));
     }
 
     private String jsonStringFor(List<Product> products) {
