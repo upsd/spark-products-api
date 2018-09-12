@@ -27,16 +27,6 @@ public class ProductAPI {
         return responseBody.toString();
     }
 
-    private void populateJsonWithProducts(JsonArray products) {
-        inMemoryProductRepository.getAll().forEach(p -> {
-            JsonObject product = new JsonObject();
-            product.add("name", p.name());
-            product.add("price", p.price());
-
-            products.add(product);
-        });
-    }
-
     public String create(Request req, Response res) {
         JsonObject productToAdd = JsonObject.readFrom(req.body());
         Product product = productFrom(productToAdd);
@@ -51,6 +41,16 @@ public class ProductAPI {
         return "";
     }
 
+    private void populateJsonWithProducts(JsonArray products) {
+        inMemoryProductRepository.getAll().forEach(p -> {
+            JsonObject product = new JsonObject();
+            product.add("name", p.name());
+            product.add("price", p.price());
+
+            products.add(product);
+        });
+    }
+    
     private Product productFrom(JsonObject productAsJson) {
         String name = productAsJson.get("name").asString();
         double price = productAsJson.get("price").asDouble();
