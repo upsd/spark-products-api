@@ -4,6 +4,9 @@ import domain.Product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 public class InMemoryProductRepository {
 
@@ -29,5 +32,11 @@ public class InMemoryProductRepository {
 
     public void clear() {
         products.clear();
+    }
+
+    public Optional<Product> getById(UUID id) {
+        return products.stream()
+                .filter(product -> product.id().equals(id))
+                .findFirst();
     }
 }

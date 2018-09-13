@@ -72,4 +72,23 @@ public class AcceptanceTests {
         .then()
                 .statusCode(201);
     }
+
+    @Test
+    public void return_404_when_product_with_specific_id_cannot_be_found() {
+        get("/products/81b573da-934e-4111-b63c-9bd0c0f644b2").then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void return_200_when_product_with_specific_id_can_be_found() {
+        UUID id = UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2");
+        inMemoryProductRepository.add(new Product(id, "chris", 30));
+
+
+        get("/products/81b573da-934e-4111-b63c-9bd0c0f644b2").then()
+                .body("id", is("81b573da-934e-4111-b63c-9bd0c0f644b2"))
+                .body("name", is("chris"))
+                .body("price", is(30))
+                .statusCode(200);
+    }
 }

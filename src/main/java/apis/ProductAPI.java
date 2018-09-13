@@ -9,6 +9,7 @@ import persistence.ProductAlreadyExistsException;
 import spark.Request;
 import spark.Response;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class ProductAPI {
@@ -47,17 +48,38 @@ public class ProductAPI {
         return "";
     }
 
+    public String getById(Request req, Response res) {
+        UUID id = UUID.fromString(req.params(":id"));
+
+        Optional<Product> productFound = inMemoryProductRepository.getById(id);
+
+        if (!productFound.isPresent()) {
+            res.status(404);
+            return "";
+        }
+
+        res.status(200);
+        res.type("application/json");
+
+        return getJsonFor(productFound.get()).toString();
+    }
+
     private void populateJsonWithProducts(JsonArray products) {
         inMemoryProductRepository.getAll().forEach(p -> {
-            JsonObject product = new JsonObject();
-            product.add("id", p.id().toString());
-            product.add("name", p.name());
-            product.add("price", p.price());
+            JsonObject product = getJsonFor(p);
 
             products.add(product);
         });
     }
-    
+
+    private JsonObject getJsonFor(Product p) {
+        JsonObject product = new JsonObject();
+        product.add("id", p.id().toString());
+        product.add("name", p.name());
+        product.add("price", p.price());
+        return product;
+    }
+
     private Product productFrom(JsonObject productAsJson) {
         String name = productAsJson.get("name").asString();
         double price = productAsJson.get("price").asDouble();

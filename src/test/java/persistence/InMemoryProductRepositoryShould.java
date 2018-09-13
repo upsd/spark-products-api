@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
@@ -54,5 +55,17 @@ public class InMemoryProductRepositoryShould {
         repository.add(new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "1", 20));
 
         repository.add(new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "1", 20));
+    }
+
+    @Test
+    public void return_the_correct_product() {
+        Product product = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "1", 20);
+        repository.add(product);
+
+
+        Optional<Product> productFound = repository.getById(product.id());
+
+
+        assertThat(productFound.get(), is(product));
     }
 }

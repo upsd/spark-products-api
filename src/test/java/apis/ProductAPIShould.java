@@ -12,6 +12,7 @@ import spark.Response;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
@@ -86,6 +87,36 @@ public class ProductAPIShould {
         verify(inMemoryProductRepository).add(newProduct);
         verify(res).status(201);
         assertThat(response, is(""));
+    }
+
+    @Test
+    public void find_product_by_id() {
+        Product product = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "Andre", 6.66);
+        given(req.params(":id")).willReturn("81b573da-934e-4111-b63c-9bd0c0f644b2");
+        given(inMemoryProductRepository.getById(product.id()))
+                .willReturn(Optional.of(product));
+
+
+        String response = productAPI.getById(req, res);
+
+
+        verify(res).status(200);
+        verify(res).type("application/json");
+        assertThat(response, is(jsonObjectFor(product).toString()));
+    }
+
+    @Test
+    public void handle_when_specified_product_is_not_found() {
+        Product product = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "Andre", 6.66);
+        given(req.params(":id")).willReturn("81b573da-934e-4111-b63c-9bd0c0f644b2");
+        given(inMemoryProductRepository.getById(product.id()))
+                .willReturn(Optional.empty());
+
+
+        productAPI.getById(req, res);
+
+
+        verify(res).status(404);
     }
 
     private String jsonStringFor(List<Product> products) {
