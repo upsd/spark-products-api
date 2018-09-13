@@ -1,5 +1,6 @@
 import apis.ProductAPI;
 import apis.Routes;
+import helpers.IdGenerator;
 import persistence.InMemoryProductRepository;
 
 import static spark.Spark.get;
@@ -12,7 +13,7 @@ public class Main {
     }
 
     private static void start() {
-        ProductAPI productAPI = new ProductAPI(new InMemoryProductRepository());
+        ProductAPI productAPI = new ProductAPI(new InMemoryProductRepository(), new IdGenerator());
         Routes routes = new Routes();
 
         routes.wireUsing(productAPI);

@@ -1,13 +1,16 @@
 package domain;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Product {
 
+    private UUID uuid;
     private String name;
     private double price;
 
-    public Product(String name, double price) {
+    public Product(UUID uuid, String name, double price) {
+        this.uuid = uuid;
         this.name = name;
         this.price = price;
     }
@@ -26,11 +29,16 @@ public class Product {
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
         return Double.compare(product.price, price) == 0 &&
+                Objects.equals(uuid, product.uuid) &&
                 Objects.equals(name, product.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, price);
+        return Objects.hash(uuid, name, price);
+    }
+
+    public UUID id() {
+        return this.uuid;
     }
 }

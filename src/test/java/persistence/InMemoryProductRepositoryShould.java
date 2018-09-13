@@ -1,11 +1,11 @@
 package persistence;
 
 import domain.Product;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
@@ -30,7 +30,7 @@ public class InMemoryProductRepositoryShould {
 
     @Test
     public void add_a_product() {
-        Product productToAdd = new Product("name", 10);
+        Product productToAdd = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "name", 10);
         repository.add(productToAdd);
 
 
@@ -39,8 +39,8 @@ public class InMemoryProductRepositoryShould {
 
     @Test
     public void clear_all_products() {
-        repository.add(new Product("1", 20));
-        repository.add(new Product("2", 10));
+        repository.add(new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "1", 20));
+        repository.add(new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "2", 10));
 
 
         repository.clear();

@@ -3,6 +3,7 @@ package apis;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import domain.Product;
+import helpers.IdGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import persistence.InMemoryProductRepository;
@@ -11,6 +12,7 @@ import spark.Response;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
@@ -24,13 +26,15 @@ public class ProductAPIShould {
     private ProductAPI productAPI;
     private Request req;
     private Response res;
+    private IdGenerator idGenerator;
 
     @Before
     public void setUp() {
         inMemoryProductRepository = mock(InMemoryProductRepository.class);
         req = mock(Request.class);
         res = mock(Response.class);
-        productAPI = new ProductAPI(inMemoryProductRepository);
+        idGenerator = mock(IdGenerator.class);
+        productAPI = new ProductAPI(inMemoryProductRepository, idGenerator);
     }
 
     @Test
@@ -52,8 +56,8 @@ public class ProductAPIShould {
     @Test
     public void return_all_products_when_multiple_products_are_found() {
         List<Product> products = asList(
-                new Product("a product", 10.00),
-                new Product("another product", 10.00)
+                new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"),"a product", 10.00),
+                new Product(UUID.fromString("ea0545c5-e0a1-46cd-80fe-26fef5c9ccb8"),"another product", 10.00)
         );
         given(inMemoryProductRepository.getAll()).willReturn(products);
 
@@ -70,32 +74,16 @@ public class ProductAPIShould {
 
     @Test
     public void create_a_product() {
-        Product newProduct = new Product("new product", 15.00);
+        Product newProduct = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "new product", 15.00);
 
         given(req.body()).willReturn(jsonObjectFor(newProduct).toString());
-
+        given(idGenerator.generate()).willReturn(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"));
 
         String response = productAPI.create(req, res);
 
 
         verify(inMemoryProductRepository).add(newProduct);
         verify(res).status(201);
-        assertThat(response, is(""));
-    }
-
-    @Test
-    public void not_create_duplicate_products() {
-        Product alreadyExistingProduct = new Product("new product", 15.00);
-
-        given(inMemoryProductRepository.getAll()).willReturn(asList(alreadyExistingProduct));
-        given(req.body()).willReturn(jsonObjectFor(alreadyExistingProduct).toString());
-
-
-        String response = productAPI.create(req, res);
-
-
-        verify(inMemoryProductRepository, never()).add(alreadyExistingProduct);
-        verify(res).status(400);
         assertThat(response, is(""));
     }
 
@@ -114,6 +102,7 @@ public class ProductAPIShould {
 
     private JsonObject jsonObjectFor(Product p) {
         return new JsonObject()
+                .add("id", p.id().toString())
                 .add("name", p.name())
                 .add("price", p.price());
     }

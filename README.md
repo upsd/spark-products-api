@@ -12,4 +12,7 @@ Those features translate into the following routes:
 * GET `/products`
 * POST `/products`
 
+To implement:
+* GET `/products/:id`
+
 Check out the [tests](./src/test) and the [production code](./src/main) to see how it works.

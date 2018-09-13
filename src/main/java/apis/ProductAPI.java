@@ -3,16 +3,21 @@ package apis;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import domain.Product;
+import helpers.IdGenerator;
 import persistence.InMemoryProductRepository;
 import spark.Request;
 import spark.Response;
 
+import java.util.UUID;
+
 public class ProductAPI {
 
     private InMemoryProductRepository inMemoryProductRepository;
+    private IdGenerator idGenerator;
 
-    public ProductAPI(InMemoryProductRepository inMemoryProductRepository) {
+    public ProductAPI(InMemoryProductRepository inMemoryProductRepository, IdGenerator idGenerator) {
         this.inMemoryProductRepository = inMemoryProductRepository;
+        this.idGenerator = idGenerator;
     }
 
     public String getAll(Request req, Response res) {
@@ -44,6 +49,7 @@ public class ProductAPI {
     private void populateJsonWithProducts(JsonArray products) {
         inMemoryProductRepository.getAll().forEach(p -> {
             JsonObject product = new JsonObject();
+            product.add("id", p.id().toString());
             product.add("name", p.name());
             product.add("price", p.price());
 
@@ -55,6 +61,6 @@ public class ProductAPI {
         String name = productAsJson.get("name").asString();
         double price = productAsJson.get("price").asDouble();
 
-        return new Product(name, price);
+        return new Product(idGenerator.generate(), name, price);
     }
 }
