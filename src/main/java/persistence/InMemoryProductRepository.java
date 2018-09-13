@@ -18,6 +18,12 @@ public class InMemoryProductRepository {
     }
 
     public void add(Product product) {
+        boolean idAlreadyUsed = products.stream().anyMatch(p -> p.id().equals(product.id()));
+
+        if (idAlreadyUsed) {
+            throw new ProductAlreadyExistsException();
+        }
+
         products.add(product);
     }
 

@@ -5,6 +5,7 @@ import com.eclipsesource.json.JsonObject;
 import domain.Product;
 import helpers.IdGenerator;
 import persistence.InMemoryProductRepository;
+import persistence.ProductAlreadyExistsException;
 import spark.Request;
 import spark.Response;
 
@@ -32,7 +33,7 @@ public class ProductAPI {
         return responseBody.toString();
     }
 
-    public String create(Request req, Response res) {
+    public String create(Request req, Response res) throws ProductAlreadyExistsException {
         JsonObject productToAdd = JsonObject.readFrom(req.body());
         Product product = productFrom(productToAdd);
 

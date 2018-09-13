@@ -2,10 +2,11 @@ import apis.ProductAPI;
 import apis.Routes;
 import domain.Product;
 import helpers.IdGenerator;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import persistence.InMemoryProductRepository;
 import spark.Spark;
-import static org.mockito.BDDMockito.given;
 
 import java.util.UUID;
 
