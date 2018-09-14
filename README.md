@@ -13,3 +13,8 @@ Those features translate into the following routes:
 * POST `/products`
 
 Check out the [tests](./src/test) and the [production code](./src/main) to see how it works.
+
+## Adding more features
+Also, check out the 
+[branch implementing more endpoints](https://github.com/upsd/spark-products-api/tree/adding_features) for an example of 
+adding more features to the basic API.
