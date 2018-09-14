@@ -38,11 +38,6 @@ public class ProductAPI {
         JsonObject productToAdd = JsonObject.readFrom(req.body());
         Product product = productFrom(productToAdd);
 
-        if (inMemoryProductRepository.getAll().contains(product)) {
-            res.status(400);
-            return "";
-        }
-
         inMemoryProductRepository.add(product);
         res.status(201);
         return "";
