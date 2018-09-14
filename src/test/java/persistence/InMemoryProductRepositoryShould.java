@@ -68,4 +68,18 @@ public class InMemoryProductRepositoryShould {
 
         assertThat(productFound.get(), is(product));
     }
+
+    @Test
+    public void update_product() {
+        Product outdatedProduct = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "outdated", 20);
+        repository.add(outdatedProduct);
+
+
+        Product updatedProduct = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "updated", 20);
+        repository.update(updatedProduct);
+        Optional<Product> productFound = repository.getById(outdatedProduct.id());
+
+
+        assertThat(productFound.get(), is(updatedProduct));
+    }
 }

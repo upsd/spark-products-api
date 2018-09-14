@@ -1,5 +1,6 @@
 import apis.ProductAPI;
 import apis.Routes;
+import com.eclipsesource.json.JsonObject;
 import domain.Product;
 import helpers.IdGenerator;
 import org.junit.Before;
@@ -90,5 +91,47 @@ public class AcceptanceTests {
                 .body("name", is("chris"))
                 .body("price", is(30))
                 .statusCode(200);
+    }
+
+    @Test
+    public void return_204_when_product_has_been_successfully_updated() {
+        UUID id = UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2");
+        inMemoryProductRepository.add(new Product(id, "cHrIs", 30));
+
+
+        given()
+                .contentType("application/json")
+                .body("{ \"name\": \"new product\", \"price\": 20.00 }")
+        .when()
+                .put("/products/81b573da-934e-4111-b63c-9bd0c0f644b2")
+        .then()
+                .statusCode(204);
+    }
+
+    @Test
+    public void return_404_when_attempting_to_update_non_existent_product() {
+        given()
+                .contentType("application/json")
+                .body("{ \"name\": \"new product\", \"price\": 20.00 }")
+        .when()
+                .put("/products/81b573da-934e-4111-b63c-9bd0c0f644b2")
+        .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void return_400_when_attempting_to_update_using_invalid_id() {
+        String payload = new JsonObject()
+                .add("name", "")
+                .add("price", 20)
+                .toString();
+
+        given()
+                .contentType("application/json")
+                .body(payload)
+        .when()
+                .put("/products/wrong-number")
+        .then()
+                .statusCode(400);
     }
 }

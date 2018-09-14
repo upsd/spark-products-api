@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public class InMemoryProductRepository {
 
@@ -38,5 +37,12 @@ public class InMemoryProductRepository {
         return products.stream()
                 .filter(product -> product.id().equals(id))
                 .findFirst();
+    }
+
+    public void update(Product updatedProduct) {
+        Optional<Product> productToUpdate = getById(updatedProduct.id());
+
+        products.remove(productToUpdate.get());
+        products.add(updatedProduct);
     }
 }

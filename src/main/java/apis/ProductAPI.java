@@ -64,6 +64,29 @@ public class ProductAPI {
         return getJsonFor(productFound.get()).toString();
     }
 
+    public String update(Request req, Response res) {
+        JsonObject payload = JsonObject.readFrom(req.body());
+
+        UUID id = null;
+        try {
+            id = UUID.fromString(req.params(":id"));
+        } catch (Exception e) {
+            res.status(400);
+            return "";
+        }
+        String name = payload.get("name").asString();
+        double price = payload.get("price").asDouble();
+
+        if (inMemoryProductRepository.getById(id).isPresent()) {
+            inMemoryProductRepository.update(new Product(id, name, price));
+            res.status(204);
+            return "";
+        }
+
+        res.status(404);
+        return "";
+    }
+
     private void populateJsonWithProducts(JsonArray products) {
         inMemoryProductRepository.getAll().forEach(p -> {
             JsonObject product = getJsonFor(p);

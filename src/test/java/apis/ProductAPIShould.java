@@ -18,9 +18,9 @@ import java.util.UUID;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class ProductAPIShould {
 
@@ -78,7 +78,7 @@ public class ProductAPIShould {
     public void create_a_product() {
         Product newProduct = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "new product", 15.00);
 
-        given(req.body()).willReturn(jsonObjectFor(newProduct).toString());
+        given(req.body()).willReturn(getPayload(newProduct.name(), newProduct.price()));
         given(idGenerator.generate()).willReturn(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"));
 
         String response = productAPI.create(req, res);
@@ -117,6 +117,57 @@ public class ProductAPIShould {
 
 
         verify(res).status(404);
+    }
+
+    @Test
+    public void update_product_data_for_specific_product() {
+        Product oldProduct = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "new updatedProduct", 20);
+        Product updatedProduct = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "new updatedProduct", 20);
+        given(req.params(":id")).willReturn(updatedProduct.id().toString());
+        given(req.body()).willReturn(getPayload(updatedProduct.name(), updatedProduct.price()));
+        given(inMemoryProductRepository.getById(updatedProduct.id()))
+                .willReturn(Optional.of(oldProduct));
+
+
+        productAPI.update(req, res);
+
+
+        verify(inMemoryProductRepository).update(updatedProduct);
+        verify(res).status(204);
+    }
+
+    @Test
+    public void handle_attempt_to_update_non_existent_product() {
+        Product product = new Product(UUID.fromString("81b573da-934e-4111-b63c-9bd0c0f644b2"), "new product", 20);
+        given(req.params(":id")).willReturn(product.id().toString());
+        given(req.body()).willReturn(getPayload(product.name(), product.price()));
+
+
+        productAPI.update(req, res);
+
+
+        verify(inMemoryProductRepository, never()).update(product);
+        verify(res).status(404);
+    }
+
+    @Test
+    public void handle_attempt_to_update_product_using_invalid_id() {
+        given(req.params(":id")).willReturn("wrong-number");
+        given(req.body()).willReturn(getPayload("", 20));
+
+
+        productAPI.update(req, res);
+
+
+        verify(inMemoryProductRepository, never()).update(any());
+        verify(res).status(400);
+    }
+
+    private String getPayload(String name, double price) {
+        return new JsonObject()
+                .add("name", name)
+                .add("price", price)
+                .toString();
     }
 
     private String jsonStringFor(List<Product> products) {

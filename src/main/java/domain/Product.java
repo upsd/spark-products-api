@@ -38,6 +38,15 @@ public class Product {
         return Objects.hash(uuid, name, price);
     }
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "uuid=" + uuid +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                '}';
+    }
+
     public UUID id() {
         return this.uuid;
     }
